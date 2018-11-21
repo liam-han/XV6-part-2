@@ -40,7 +40,7 @@ exec(char *path, char **argv)
     goto bad;
 
   // Load program into memory.
-  sz = 0;
+  //sz = 0;
   for(i=0, off=elf.phoff; i<elf.phnum; i++, off+=sizeof(ph)){
     if(readi(ip, (char*)&ph, off, sizeof(ph)) != sizeof(ph))
       goto bad;
@@ -65,9 +65,9 @@ exec(char *path, char **argv)
   // Make the first inaccessible.  Use the second as the user stack.
   user_top = KERNBASE - 4;
   //sz = PGROUNDUP(sz);
-  if((allocuvm(pgdir, user_top - 2*PGSIZE, user_top)) == 0)
+  if((allocuvm(pgdir, user_top - PGSIZE, user_top)) == 0)
     goto bad;
-  clearpteu(pgdir, (char*)(user_top - 2*PGSIZE));
+  //clearpteu(pgdir, (char*)(user_top - 2*PGSIZE));
   sp = user_top;
 
   // Push argument strings, prepare rest of stack in ustack.
