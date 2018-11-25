@@ -40,7 +40,7 @@ exec(char *path, char **argv)
     goto bad;
 
   // Load program into memory.
-  //sz = 0;
+  sz = 0;
   for(i=0, off=elf.phoff; i<elf.phnum; i++, off+=sizeof(ph)){
     if(readi(ip, (char*)&ph, off, sizeof(ph)) != sizeof(ph))
       goto bad;
@@ -61,8 +61,6 @@ exec(char *path, char **argv)
   end_op();
   ip = 0;
 
-  // Allocate two pages at the next page boundary.
-  // Make the first inaccessible.  Use the second as the user stack.
   user_top = KERNBASE - 4;
   //sz = PGROUNDUP(sz);
   if((allocuvm(pgdir, user_top - PGSIZE, user_top)) == 0)
@@ -101,6 +99,7 @@ exec(char *path, char **argv)
   curproc->sz = sz;
   curproc->tf->eip = elf.entry;  // main
   curproc->tf->esp = sp;
+  curproc->page_stack_num = 1; //set number of pages made to 1
   switchuvm(curproc);
   freevm(oldpgdir);
   return 0;
