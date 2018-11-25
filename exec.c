@@ -96,7 +96,7 @@ exec(char *path, char **argv)
   // Commit to the user image.
   oldpgdir = curproc->pgdir;
   curproc->pgdir = pgdir;
-  curproc->sz = sz;
+  curproc->sz = user_top;
   curproc->tf->eip = elf.entry;  // main
   curproc->tf->esp = sp;
   curproc->page_stack_num = 1; //set number of pages made to 1
