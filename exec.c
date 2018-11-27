@@ -13,7 +13,7 @@ exec(char *path, char **argv)
   char *s, *last;
   int i, off;
   uint argc, sz, sp, ustack[3+MAXARG+1];
-  uint user_top;
+//  uint user_top;
   struct elfhdr elf;
   struct inode *ip;
   struct proghdr ph;
@@ -65,12 +65,12 @@ exec(char *path, char **argv)
   end_op();
   ip = 0;
 
-  user_top = KERNBASE - 4;
+  //user_top = KERNBASE - 4;
   //sz = PGROUNDUP(sz);
-  if((allocuvm(pgdir, user_top - PGSIZE, user_top)) == 0)
+  if((allocuvm(pgdir, USERTOP - PGSIZE, USERTOP)) == 0)
     goto bad;
   //clearpteu(pgdir, (char*)(user_top - 2*PGSIZE));
-  sp = user_top;
+  sp = USERTOP;
 
   // Push argument strings, prepare rest of stack in ustack.
   for(argc = 0; argv[argc]; argc++) {
@@ -100,8 +100,8 @@ exec(char *path, char **argv)
   // Commit to the user image.
   oldpgdir = curproc->pgdir;
   curproc->pgdir = pgdir;
-  curproc->sz = user_top;
-  curproc->stack_base = user_top;
+  curproc->sz = sz;
+//  curproc->stack_base = user_top;
   curproc->tf->eip = elf.entry;  // main
   curproc->tf->esp = sp;
   curproc->page_stack_num = 1; //set number of pages made to 1
