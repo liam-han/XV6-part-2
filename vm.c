@@ -398,10 +398,19 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
   return 0;
 }
 
-//PAGEBREAK!
-// Blank page.
-//PAGEBREAK!
-// Blank page.
-//PAGEBREAK!
-// Blank page.
+void
+setpteu(pde_t *pgdir, char *uva)
+{
+  pte_t *pte;
+   pte = walkpgdir(pgdir, uva, 0);
+  if(pte == 0)
+    panic("setpteu");
+  *pte |= PTE_U;
+}
 
+//PAGEBREAK!
+// Blank page.
+//PAGEBREAK!
+// Blank page.
+//PAGEBREAK!
+// Blank page

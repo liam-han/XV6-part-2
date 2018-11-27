@@ -77,7 +77,24 @@ trap(struct trapframe *tf)
             cpuid(), tf->cs, tf->eip);
     lapiceoi();
     break;
+  case T_PGFLT:
+    if (myproc()->tf->esp <= (myproc()->stack_base + PGSIZE)) {
+      myproc()->stack_base -= PGSIZE;
 
+      if(allocuvm(myproc()->pgdir, myproc()->stack_base, myproc()->stack_base + PGSIZE) == 0)
+        goto segfault;
+      clearpteu(myproc()->pgdir, (char *)myproc()->stack_base);
+      setpteu(myproc()->pgdir, (char *)(myproc()->stack_base + PGSIZE));
+      break;
+    }
+    segfault:
+      cprintf("pid %d %s: trap %d err %d on cpu %d "
+            "eip 0x%x addr 0x%x--kill proc\n",
+      myproc()->pid, myproc()->name, tf->trapno,
+      tf->err, cpuid(), tf->eip, rcr2());
+      myproc()->killed = 1;
+
+    break;
   //PAGEBREAK: 13
   default:
     if(myproc() == 0 || (tf->cs&3) == 0){

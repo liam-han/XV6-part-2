@@ -13,7 +13,8 @@ exec(char *path, char **argv)
   char *s, *last;
   int i, off;
   uint argc, sz, sp, ustack[3+MAXARG+1];
-//  uint user_top;
+//  uint user_top;a
+  uint stack_base;
   struct elfhdr elf;
   struct inode *ip;
   struct proghdr ph;
@@ -67,7 +68,8 @@ exec(char *path, char **argv)
 
   //user_top = KERNBASE - 4;
   //sz = PGROUNDUP(sz);
-  if((allocuvm(pgdir, USERTOP - PGSIZE, USERTOP)) == 0)
+  stack_base = USERTOP - PGSIZE;
+  if((allocuvm(pgdir, stack_base, USERTOP)) == 0)
     goto bad;
   //clearpteu(pgdir, (char*)(user_top - 2*PGSIZE));
   sp = USERTOP;
@@ -101,6 +103,7 @@ exec(char *path, char **argv)
   oldpgdir = curproc->pgdir;
   curproc->pgdir = pgdir;
   curproc->sz = sz;
+  curproc->stack_base = stack_base;
 //  curproc->stack_base = user_top;
   curproc->tf->eip = elf.entry;  // main
   curproc->tf->esp = sp;
