@@ -13,12 +13,13 @@
 // library system call function. The saved user %esp points
 // to a saved program counter, and then the first argument.
 // Fetch the int at addr from the current process.
+
+
 int
 fetchint(uint addr, int *ip)
 {
-  struct proc *curproc = myproc();
 
-  if(addr <= curproc->stack_base || addr+4 < curproc->stack_base)
+  if(addr >= USERTOP || addr+4 > USERTOP)
     return -1;
   *ip = *(int*)(addr);
   return 0;
@@ -32,11 +33,10 @@ fetchstr(uint addr, char **pp)
 {
   char *s, *ep;
   struct proc *curproc = myproc();
-
-  if(addr <= curproc->stack_base)
+  if(addr >= USERTOP)
     return -1;
   *pp = (char*)addr;
-  ep = (char*)curproc->stack_base;
+  ep = (char*)curproc->sz;
   for(s = *pp; s < ep; s++){
     if(*s == 0)
       return s - *pp;
@@ -58,11 +58,10 @@ int
 argptr(int n, char **pp, int size)
 {
   int i;
-  struct proc *curproc = myproc();
  
   if(argint(n, &i) < 0)
     return -1;
-  if(size < 0 || (uint)i <= curproc->stack_base || (uint)i+size < curproc->stack_base)
+  if(size < 0 || (uint)i >= USERTOP || (uint)i+size > USERTOP)
     return -1;
   *pp = (char*)i;
   return 0;

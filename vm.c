@@ -337,7 +337,7 @@ copyuvm(pde_t *pgdir, uint sz, uint page_stack_num)
       goto bad;
   }
   
-  for(i = 0; i < page_stack_num; i += PGSIZE){
+  for(i = PGROUNDDOWN(page_stack_num); i < USERTOP; i += PGSIZE){
     if((pte = walkpgdir(pgdir, (void *) i, 0)) == 0)
       panic("copyuvm: pte should exist");
     if(!(*pte & PTE_P))

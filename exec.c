@@ -41,6 +41,10 @@ exec(char *path, char **argv)
 
   // Load program into memory.
   sz = 0;
+  if((sz = allocuvm(pgdir, 0, PGSIZE)) == 0)
+   goto bad;
+  clearpteu(pgdir, (char*)(sz - PGSIZE));
+  
   for(i=0, off=elf.phoff; i<elf.phnum; i++, off+=sizeof(ph)){
     if(readi(ip, (char*)&ph, off, sizeof(ph)) != sizeof(ph))
       goto bad;
