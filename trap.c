@@ -84,7 +84,6 @@ trap(struct trapframe *tf)
       if(allocuvm(myproc()->pgdir, myproc()->stack_base, myproc()->stack_base + PGSIZE) == 0)
         goto segfault;
       clearpteu(myproc()->pgdir, (char *)myproc()->stack_base);
-      setpteu(myproc()->pgdir, (char *)(myproc()->stack_base + PGSIZE));
       break;
     }
     segfault:

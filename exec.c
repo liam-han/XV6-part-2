@@ -104,7 +104,6 @@ exec(char *path, char **argv)
   curproc->pgdir = pgdir;
   curproc->sz = sz;
   curproc->stack_base = stack_base;
-//  curproc->stack_base = user_top;
   curproc->tf->eip = elf.entry;  // main
   curproc->tf->esp = sp;
   curproc->page_stack_num = 1; //set number of pages made to 1
